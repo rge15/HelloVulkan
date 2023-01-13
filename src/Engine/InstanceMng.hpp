@@ -4,9 +4,10 @@
 
 class InstanceMng
 {
-private:
+public:
 	VkInstance	_vkInstance {VK_NULL_HANDLE};
-    
+
+private:    
 	VkInstanceCreateInfo    _instanceInfo {};
     VkApplicationInfo		_appInfo {};
 

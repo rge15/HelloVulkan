@@ -1,9 +1,9 @@
-#include "HelloVulkan.hpp"
+#include "InstanceExtensionLayers.hpp"
 #include <Engine/InstanceMng.hpp>
 #include <utilities/typeAliases.hpp>
 
 void
-HelloVulkan::run()
+InstanceExtensionLayers::run()
 {
     std::cout << "HelloVulkan!\n";
     UniqPtr<InstanceMng> instMng = std::make_unique<InstanceMng>();
