@@ -33,3 +33,5 @@ obj/*
 *.app
 hellovulkan
 
+#vscode files
+.vscode/
