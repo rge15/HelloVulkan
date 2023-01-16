@@ -1,9 +1,9 @@
 #include <App/BaseApplication.hpp>
 #include <utilities/graphicInclude.hpp>
 
-struct HelloVulkan : BaseApplication
+struct HelloVulkanApp : BaseApplication
 {
-    HelloVulkan() = default;
-    ~HelloVulkan() = default;
+    HelloVulkanApp() = default;
+    ~HelloVulkanApp() = default;
     void run() override;
 };

@@ -1,9 +1,9 @@
-#include "PhysicalDevice.hpp"
+#include "PhysicalDeviceApp.hpp"
 #include <Engine/InstanceMng.hpp>
 #include <utilities/typeAliases.hpp>
 
 void
-PhysicalDevice::run()
+PhysicalDeviceApp::run()
 {
     std::cout << "HelloVulkan!\n";
     UniqPtr<InstanceMng> instMng = std::make_unique<InstanceMng>();
@@ -38,7 +38,7 @@ PhysicalDevice::run()
 }
 
 bool
-PhysicalDevice::checkDeviceSuitability(VkPhysicalDevice p_device)
+PhysicalDeviceApp::checkDeviceSuitability(VkPhysicalDevice p_device)
 {
     std::cout << "<----- Checking Devices Suitability ----->\n";
 

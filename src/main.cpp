@@ -2,7 +2,7 @@
 
 int main()
 {
-    HelloVulkan app{};
+    LogicaDeviceQueuesApp app{};
 
     app.run();
 }

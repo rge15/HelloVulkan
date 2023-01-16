@@ -1,10 +1,10 @@
 #include <App/BaseApplication.hpp>
 #include <utilities/graphicInclude.hpp>
 
-struct PhysicalDevice : BaseApplication
+struct PhysicalDeviceApp : BaseApplication
 {
-    PhysicalDevice() = default;
-    ~PhysicalDevice() = default;
+    PhysicalDeviceApp() = default;
+    ~PhysicalDeviceApp() = default;
     void run() override;
 
     bool checkDeviceSuitability(VkPhysicalDevice p_device);

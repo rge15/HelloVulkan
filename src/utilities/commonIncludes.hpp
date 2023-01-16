@@ -4,3 +4,4 @@
 #include <assert.h>
 #include <string>
 #include <cstring>
+#include <optional>
