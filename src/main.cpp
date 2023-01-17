@@ -2,7 +2,7 @@
 
 int main()
 {
-    LogicaDeviceQueuesApp app{};
+    WindowSurfacePresentApp app{};
 
     app.run();
 }

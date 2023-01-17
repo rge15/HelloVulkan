@@ -1,7 +1,7 @@
-#include "DeviceMng.hpp"
+#include "DeprecatedDeviceMng.hpp"
 
-DeviceMng::DeviceMng(VkInstance& p_instance, VkSurfaceKHR& p_surface) noexcept
-: _instance { p_instance }, _surface { p_surface }
+DeprecatedDeviceMng::DeprecatedDeviceMng(VkInstance& p_instance) noexcept
+: _instance { p_instance }
 {
     getSuitableDevice();
     initLogicalDeviceInfo();
@@ -12,7 +12,7 @@ DeviceMng::DeviceMng(VkInstance& p_instance, VkSurfaceKHR& p_surface) noexcept
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
-DeviceMng::~DeviceMng() noexcept
+DeprecatedDeviceMng::~DeprecatedDeviceMng() noexcept
 {
     if(_logicalDevice != VK_NULL_HANDLE)
     {
@@ -28,7 +28,7 @@ DeviceMng::~DeviceMng() noexcept
 //-----------------------------------------------------------------------------
 
 void
-DeviceMng::getSuitableDevice() noexcept
+DeprecatedDeviceMng::getSuitableDevice() noexcept
 {
     uint32_t phDevicesCount { 0 };
     Vector<VkPhysicalDevice> phDevices;
@@ -38,8 +38,6 @@ DeviceMng::getSuitableDevice() noexcept
 
     for(auto& device : phDevices)
     {
-        _graphicQueueID.reset();
-        _presentQueueID.reset();
         if(checkDeviceSuitability(device))
         {
             _physicalDevice = device;
@@ -53,7 +51,7 @@ DeviceMng::getSuitableDevice() noexcept
 //-----------------------------------------------------------------------------
 
 bool
-DeviceMng::checkDeviceSuitability( VkPhysicalDevice& p_phDevice ) noexcept
+DeprecatedDeviceMng::checkDeviceSuitability( VkPhysicalDevice& p_phDevice ) noexcept
 {
     uint32_t countQueueFamilies { 0 };
     Vector<VkQueueFamilyProperties> queueFamilies {};
@@ -65,8 +63,12 @@ DeviceMng::checkDeviceSuitability( VkPhysicalDevice& p_phDevice ) noexcept
     int i = 0;
     for(auto& queueFamily : queueFamilies )
     {
-        if(checkQueueSuitability( p_phDevice, queueFamily, i++))
+        if(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+        {
+            _graphicQueueID = i;
             return true;
+        }
+        ++i;
     }
 
     return false;
@@ -75,29 +77,8 @@ DeviceMng::checkDeviceSuitability( VkPhysicalDevice& p_phDevice ) noexcept
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
-bool
-DeviceMng::checkQueueSuitability( VkPhysicalDevice p_device, VkQueueFamilyProperties p_queueFamily, uint32_t p_id ) noexcept
-{
-    VkBool32 presentSupport = VK_FALSE;
-
-    if(p_queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT && !(_graphicQueueID.has_value()))
-        _graphicQueueID = p_id;
-
-    vkGetPhysicalDeviceSurfaceSupportKHR( p_device, p_id, _surface, &presentSupport );
-    if( presentSupport == VK_TRUE && !(_presentQueueID.has_value()) )
-        _presentQueueID = p_id;
-    
-    if( _presentQueueID.has_value() && _graphicQueueID.has_value() )
-        return true;
-
-    return false;
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-
 void
-DeviceMng::createLogicalDevice() noexcept
+DeprecatedDeviceMng::createLogicalDevice() noexcept
 {
     auto result = vkCreateDevice( _physicalDevice, &_deviceInfo, nullptr, &_logicalDevice );
 
@@ -110,7 +91,7 @@ DeviceMng::createLogicalDevice() noexcept
 //-----------------------------------------------------------------------------
 
 void
-DeviceMng::initLogicalDeviceInfo() noexcept
+DeprecatedDeviceMng::initLogicalDeviceInfo() noexcept
 {
     initQueueCreateInfo();
     vkGetPhysicalDeviceFeatures( _physicalDevice, &_phDeviceFeatures );
@@ -118,8 +99,8 @@ DeviceMng::initLogicalDeviceInfo() noexcept
     _deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     _deviceInfo.pNext = nullptr;
     _deviceInfo.flags = 0;
-    _deviceInfo.queueCreateInfoCount = (uint32_t)_queuesCreateInfo.size();
-    _deviceInfo.pQueueCreateInfos = _queuesCreateInfo.data();
+    _deviceInfo.queueCreateInfoCount = 1;
+    _deviceInfo.pQueueCreateInfos = &_queueCreateInfo;
     _deviceInfo.enabledLayerCount = 0;
     _deviceInfo.ppEnabledLayerNames = nullptr;
     _deviceInfo.enabledExtensionCount = 0;
@@ -131,33 +112,22 @@ DeviceMng::initLogicalDeviceInfo() noexcept
 //-----------------------------------------------------------------------------
 
 void
-DeviceMng::initQueueCreateInfo() noexcept
+DeprecatedDeviceMng::initQueueCreateInfo() noexcept
 {
-    Set<uint32_t> queuesIds { _graphicQueueID.value() , _presentQueueID.value() };
-
-    for(auto id : queuesIds)
-    {
-        VkDeviceQueueCreateInfo queueInfo;
-        
-        queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        queueInfo.pNext = nullptr;
-        queueInfo.flags = 0;
-        queueInfo.queueCount = 1;
-        queueInfo.queueFamilyIndex = id;
-        queueInfo.pQueuePriorities = &_queuePriority;
-
-        _queuesCreateInfo.push_back(queueInfo);
-    }
+    _queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    _queueCreateInfo.pNext = nullptr;
+    _queueCreateInfo.flags = 0;
+    _queueCreateInfo.queueCount = 1;
+    _queueCreateInfo.queueFamilyIndex = _graphicQueueID.value();
+    _queueCreateInfo.pQueuePriorities = &_queuePriority;
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
 void
-DeviceMng::getQueueHandlers() noexcept
+DeprecatedDeviceMng::getQueueHandlers() noexcept
 {
     vkGetDeviceQueue( _logicalDevice, _graphicQueueID.value(), 0, &_graphicQueueHandler );
     std::cout << "Graphical Queue Handler succesfully obtained ;D\n";
-    vkGetDeviceQueue( _logicalDevice, _presentQueueID.value(), 0, &_presentQueueHandler );
-    std::cout << "Presentation Queue Handler succesfully obtained ;D\n";
 }
