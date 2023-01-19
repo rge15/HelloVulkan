@@ -1,5 +1,7 @@
 #include <utilities/graphicInclude.hpp>
 #include <utilities/typeAliases.hpp>
+#include <Engine/utilStructs/SwapchainDetails.hpp>
+#include <Engine/utilStructs/DeviceQueueFamilies.hpp>
 
 class DeviceMng
 {
@@ -19,15 +21,40 @@ private:
 	VkQueue	_graphicQueueHandler { VK_NULL_HANDLE };
 	VkQueue	_presentQueueHandler { VK_NULL_HANDLE };
 
-	Optional<uint32_t>	_graphicQueueID;
-	Optional<uint32_t>	_presentQueueID;
+	DeviceQueueFamilies _queueIds{};
+	float	_queuePriority { 1.f };
 
-	float	_queuePriority { 1.f }; 
+	SwapchainDetails _swapchainSupportDetails {};
+
+	const Vector<const char*> _requiredDeviceExtensions =
+	{
+		VK_KHR_SWAPCHAIN_EXTENSION_NAME
+	};
 
 public:
     DeviceMng(VkInstance& p_instance, VkSurfaceKHR& p_surface) noexcept;
-    DeviceMng(VkInstance& p_instance) noexcept;
 	~DeviceMng();
+
+	inline
+	const DeviceQueueFamilies&
+	getFamilyQueueIds() const noexcept
+	{
+		return _queueIds;
+	}
+
+	inline
+	const SwapchainDetails&
+	getSwapchainDetails() const noexcept
+	{
+		return _swapchainSupportDetails;
+	}
+
+	inline
+	VkDevice&
+	getDevice() noexcept
+	{
+		return _logicalDevice;
+	}
 
 private:
 
@@ -51,5 +78,17 @@ private:
 
 	bool
 	checkQueueSuitability( VkPhysicalDevice p_device, VkQueueFamilyProperties p_queueFamily, uint32_t p_id ) noexcept;
+
+	bool
+	checkExtensions( VkPhysicalDevice& p_phDevice ) noexcept;
+
+	bool
+	checkQueues( VkPhysicalDevice& p_phDevice ) noexcept;
+
+	bool
+	checkSwapchain( VkPhysicalDevice& p_phDevice ) noexcept;
+
+	void
+	getSwapchainSupportDetails( VkPhysicalDevice& p_phDevice ) noexcept;
 
 };

@@ -2,7 +2,7 @@
 
 int main()
 {
-    WindowSurfacePresentApp app{};
+    SwapchainApp app{};
 
     app.run();
 }

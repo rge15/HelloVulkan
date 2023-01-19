@@ -1,27 +1,32 @@
 #include <utilities/graphicInclude.hpp>
 #include <utilities/typeAliases.hpp>
 
-class DeprecatedDeviceMng
+class DeviceMng_WindowAPP
 {
 private:
 	
-	VkInstance&	_instance;
+	VkInstance&		_instance;
+	VkSurfaceKHR&	_surface;
 
     VkPhysicalDeviceFeatures	_phDeviceFeatures {};
-	VkDeviceQueueCreateInfo		_queueCreateInfo {};
 	VkDeviceCreateInfo 			_deviceInfo {};
 
 	VkPhysicalDevice	_physicalDevice { VK_NULL_HANDLE };
 	VkDevice			_logicalDevice 	{ VK_NULL_HANDLE };
 
+	Vector<VkDeviceQueueCreateInfo> _queuesCreateInfo;
+
 	VkQueue	_graphicQueueHandler { VK_NULL_HANDLE };
+	VkQueue	_presentQueueHandler { VK_NULL_HANDLE };
 
 	Optional<uint32_t>	_graphicQueueID;
+	Optional<uint32_t>	_presentQueueID;
+
 	float	_queuePriority { 1.f }; 
 
 public:
-    DeprecatedDeviceMng(VkInstance& p_instance) noexcept;
-    ~DeprecatedDeviceMng();
+    DeviceMng_WindowAPP(VkInstance& p_instance, VkSurfaceKHR& p_surface) noexcept;
+	~DeviceMng_WindowAPP();
 
 private:
 
@@ -42,5 +47,8 @@ private:
 
 	void
 	getQueueHandlers() noexcept;
+
+	bool
+	checkQueueSuitability( VkPhysicalDevice p_device, VkQueueFamilyProperties p_queueFamily, uint32_t p_id ) noexcept;
 
 };

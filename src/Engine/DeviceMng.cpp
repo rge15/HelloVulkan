@@ -38,8 +38,7 @@ DeviceMng::getSuitableDevice() noexcept
 
     for(auto& device : phDevices)
     {
-        _graphicQueueID.reset();
-        _presentQueueID.reset();
+        _queueIds.reset();
         if(checkDeviceSuitability(device))
         {
             _physicalDevice = device;
@@ -54,6 +53,80 @@ DeviceMng::getSuitableDevice() noexcept
 
 bool
 DeviceMng::checkDeviceSuitability( VkPhysicalDevice& p_phDevice ) noexcept
+{
+
+    bool queueSuitability = checkQueues( p_phDevice );
+
+    bool extensionSuitability = checkExtensions( p_phDevice );
+
+    bool swapchainSuitability = checkSwapchain( p_phDevice );
+
+    if( queueSuitability && extensionSuitability && swapchainSuitability )
+        return true;
+
+    return false;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+bool
+DeviceMng::checkSwapchain( VkPhysicalDevice& p_phDevice ) noexcept
+{
+    getSwapchainSupportDetails( p_phDevice );
+
+    if( !_swapchainSupportDetails.formats.empty() && !_swapchainSupportDetails.presentModes.empty() )
+        return true;
+
+    return false;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+void
+DeviceMng::getSwapchainSupportDetails( VkPhysicalDevice& p_phDevice ) noexcept
+{
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR( p_phDevice, _surface, &_swapchainSupportDetails.capabilities );
+
+    uint32_t presentCount { 0 };
+    vkGetPhysicalDeviceSurfacePresentModesKHR( p_phDevice, _surface, &presentCount, nullptr );
+    _swapchainSupportDetails.presentModes.resize(presentCount);
+    vkGetPhysicalDeviceSurfacePresentModesKHR( p_phDevice, _surface, &presentCount, &_swapchainSupportDetails.presentModes[0] );
+
+    uint32_t formatCount { 0 };
+    vkGetPhysicalDeviceSurfaceFormatsKHR( p_phDevice, _surface, &formatCount, nullptr);
+    _swapchainSupportDetails.formats.resize(formatCount);
+    vkGetPhysicalDeviceSurfaceFormatsKHR( p_phDevice, _surface, &formatCount, &_swapchainSupportDetails.formats[0]);
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+bool
+DeviceMng::checkExtensions( VkPhysicalDevice& p_phDevice ) noexcept
+{
+    uint32_t extensionCount { 0 };
+    Vector<VkExtensionProperties> availableExtensions;
+    vkEnumerateDeviceExtensionProperties( p_phDevice, nullptr, &extensionCount, nullptr );
+    availableExtensions.resize(extensionCount);
+    vkEnumerateDeviceExtensionProperties( p_phDevice, nullptr, &extensionCount, &availableExtensions[0] );
+
+    Set<std::string> requiredExtensionsSet( _requiredDeviceExtensions.begin(), _requiredDeviceExtensions.end() );
+
+    for(auto& extension : availableExtensions)
+    {
+        requiredExtensionsSet.erase( extension.extensionName );
+    }
+
+    return requiredExtensionsSet.empty();
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+bool
+DeviceMng::checkQueues( VkPhysicalDevice& p_phDevice ) noexcept
 {
     uint32_t countQueueFamilies { 0 };
     Vector<VkQueueFamilyProperties> queueFamilies {};
@@ -80,14 +153,14 @@ DeviceMng::checkQueueSuitability( VkPhysicalDevice p_device, VkQueueFamilyProper
 {
     VkBool32 presentSupport = VK_FALSE;
 
-    if(p_queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT && !(_graphicQueueID.has_value()))
-        _graphicQueueID = p_id;
+    if(p_queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT && !(_queueIds._graphicQueueId.has_value()))
+        _queueIds._graphicQueueId = p_id;
 
     vkGetPhysicalDeviceSurfaceSupportKHR( p_device, p_id, _surface, &presentSupport );
-    if( presentSupport == VK_TRUE && !(_presentQueueID.has_value()) )
-        _presentQueueID = p_id;
+    if( presentSupport == VK_TRUE && !(_queueIds._presentQueueId.has_value()) )
+        _queueIds._presentQueueId = p_id;
     
-    if( _presentQueueID.has_value() && _graphicQueueID.has_value() )
+    if( _queueIds._presentQueueId.has_value() && _queueIds._graphicQueueId.has_value() )
         return true;
 
     return false;
@@ -122,8 +195,8 @@ DeviceMng::initLogicalDeviceInfo() noexcept
     _deviceInfo.pQueueCreateInfos = _queuesCreateInfo.data();
     _deviceInfo.enabledLayerCount = 0;
     _deviceInfo.ppEnabledLayerNames = nullptr;
-    _deviceInfo.enabledExtensionCount = 0;
-    _deviceInfo.ppEnabledExtensionNames = nullptr;
+    _deviceInfo.enabledExtensionCount = (uint32_t)_requiredDeviceExtensions.size() ;
+    _deviceInfo.ppEnabledExtensionNames = _requiredDeviceExtensions.data();
     _deviceInfo.pEnabledFeatures = &_phDeviceFeatures;
 }
 
@@ -133,7 +206,7 @@ DeviceMng::initLogicalDeviceInfo() noexcept
 void
 DeviceMng::initQueueCreateInfo() noexcept
 {
-    Set<uint32_t> queuesIds { _graphicQueueID.value() , _presentQueueID.value() };
+    Set<uint32_t> queuesIds { _queueIds._graphicQueueId.value() , _queueIds._presentQueueId.value() };
 
     for(auto id : queuesIds)
     {
@@ -156,8 +229,11 @@ DeviceMng::initQueueCreateInfo() noexcept
 void
 DeviceMng::getQueueHandlers() noexcept
 {
-    vkGetDeviceQueue( _logicalDevice, _graphicQueueID.value(), 0, &_graphicQueueHandler );
+    vkGetDeviceQueue( _logicalDevice, _queueIds._graphicQueueId.value(), 0, &_graphicQueueHandler );
     std::cout << "Graphical Queue Handler succesfully obtained ;D\n";
-    vkGetDeviceQueue( _logicalDevice, _presentQueueID.value(), 0, &_presentQueueHandler );
+    vkGetDeviceQueue( _logicalDevice, _queueIds._presentQueueId.value(), 0, &_presentQueueHandler );
     std::cout << "Presentation Queue Handler succesfully obtained ;D\n";
 }
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------

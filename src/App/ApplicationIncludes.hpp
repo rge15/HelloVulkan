@@ -3,3 +3,4 @@
 #include <App/PhysicalDeviceQueueFamilies/PhysicalDeviceApp.hpp>
 #include <App/LogicalDeviceQueues/LogicalDeviceQueuesApp.hpp>
 #include <App/WindowSurfacePresent/WindowSurfacePresentApp.hpp>
+#include <App/SwapChain/SwapchainApp.hpp>
