@@ -7,12 +7,25 @@ SwapchainMng::SwapchainMng(VkDevice& p_device, VkSurfaceKHR& p_surface, const Sw
     _queueFamilies.push_back( _queueIds._presentQueueId.value() );
     initCreateInfo();
     createSwapchain();
+    getSwapchainImages();
+    getImageViews();
 }
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 SwapchainMng::~SwapchainMng()
 {
+    for(int i = 0 ; i < _viewImages.size(); i++)
+    {
+        vkDestroyImageView( _device, _viewImages[i], nullptr );
+    }
+
     vkDestroySwapchainKHR( _device, _swapchain, nullptr );
 }
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void
 SwapchainMng::initCreateInfo()
@@ -41,6 +54,9 @@ SwapchainMng::initCreateInfo()
     _createInfo.oldSwapchain = VK_NULL_HANDLE;
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
 void
 SwapchainMng::createSwapchain()
 {
@@ -50,6 +66,9 @@ SwapchainMng::createSwapchain()
 
     std::cout << "Swapchain created succesfully :vD \n";
 }
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void
 SwapchainMng::selectImageCount()
@@ -65,6 +84,9 @@ SwapchainMng::selectImageCount()
 
     _createInfo.minImageCount = imageCount;
 }
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void
 SwapchainMng::selectColorAndFormat()
@@ -82,6 +104,9 @@ SwapchainMng::selectColorAndFormat()
     _createInfo.imageColorSpace = _swapDetails.formats[0].colorSpace;
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
 void
 SwapchainMng::selectQueueFamiliesImages()
 {
@@ -97,6 +122,9 @@ SwapchainMng::selectQueueFamiliesImages()
     }
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
 void
 SwapchainMng::selectPresentMode()
 {
@@ -109,4 +137,58 @@ SwapchainMng::selectPresentMode()
         }
     }
     _createInfo.presentMode = _swapDetails.presentModes[0];
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+void
+SwapchainMng::getSwapchainImages()
+{
+    uint32_t imageCount { 0 };
+    vkGetSwapchainImagesKHR( _device, _swapchain, &imageCount, nullptr );
+    _swapImages.resize(imageCount);
+    vkGetSwapchainImagesKHR( _device, _swapchain, &imageCount, &_swapImages[0] );
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+void
+SwapchainMng::getImageViews()
+{
+    VkImageViewCreateInfo imageViewCreateInfo{};
+
+    imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    imageViewCreateInfo.pNext = nullptr;
+    imageViewCreateInfo.flags = 0;
+
+    imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+    imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+    imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+    imageViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+    imageViewCreateInfo.format = _createInfo.imageFormat;
+    imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+
+    imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    imageViewCreateInfo.subresourceRange.layerCount = 1;
+    imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
+    imageViewCreateInfo.subresourceRange.levelCount = 1;
+    imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
+
+    for(int i = 0; i < _swapImages.size() ; i++ )
+    {
+        imageViewCreateInfo.image = _swapImages[i];
+
+        auto result = vkCreateImageView( _device, &imageViewCreateInfo, nullptr, &_viewImages[i] );
+
+        if(result != VK_SUCCESS)
+        {
+            std::cout << "Couldn't create vkImage number : " << i << '\n';
+            assert(result == VK_SUCCESS);
+        }
+    }
+    
+    std::cout << "VkImageViews created succesfully \n";
 }

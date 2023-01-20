@@ -16,6 +16,9 @@ private:
 
     VkSwapchainCreateInfoKHR _createInfo{};
 
+    Vector<VkImage> _swapImages;
+    Vector<VkImageView> _viewImages;
+
 public:
     SwapchainMng(VkDevice& p_device, VkSurfaceKHR& p_surface, const SwapchainDetails& p_details, const DeviceQueueFamilies& p_queueIds );
     ~SwapchainMng();
@@ -38,4 +41,10 @@ private:
 
     void
     selectPresentMode();
+
+    void
+    getSwapchainImages();
+
+    void
+    getImageViews();
 };
