@@ -4,3 +4,4 @@
 #include <App/LogicalDeviceQueues/LogicalDeviceQueuesApp.hpp>
 #include <App/WindowSurfacePresent/WindowSurfacePresentApp.hpp>
 #include <App/SwapChain/SwapchainApp.hpp>
+#include <App/ShaderModules/ShaderModulesApp.hpp>

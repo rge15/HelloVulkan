@@ -1,5 +1,7 @@
 #include "commonIncludes.hpp"
 
+using String = std::string;
+
 template<typename... T>
 using UniqPtr = std::unique_ptr<T...>;
 

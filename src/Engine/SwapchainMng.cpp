@@ -148,6 +148,7 @@ SwapchainMng::getSwapchainImages()
     uint32_t imageCount { 0 };
     vkGetSwapchainImagesKHR( _device, _swapchain, &imageCount, nullptr );
     _swapImages.resize(imageCount);
+    _viewImages.resize(imageCount);
     vkGetSwapchainImagesKHR( _device, _swapchain, &imageCount, &_swapImages[0] );
 }
 

@@ -2,7 +2,7 @@
 
 int main()
 {
-    SwapchainApp app{};
+    ShaderModulesApp app{};
 
     app.run();
 }

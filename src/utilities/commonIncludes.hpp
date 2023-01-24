@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <vector>
 #include <assert.h>
