@@ -7,8 +7,14 @@
 void
 WindowSurfacePresentApp::run()
 {
-    UniqPtr<WindowMng> windowMng = std::make_unique<WindowMng>();
-    UniqPtr<InstanceMng> instanceMng = std::make_unique<InstanceMng>();
-    UniqPtr<SurfaceMng> surfaceMng = std::make_unique<SurfaceMng>( instanceMng.get()->_vkInstance, windowMng.get()->getWindow() );
-    UniqPtr<DeviceMng_WindowAPP> deviceMng_WindowAPP = std::make_unique<DeviceMng_WindowAPP>( instanceMng.get()->_vkInstance, surfaceMng.get()->getSurface() );
+    auto windowMng = std::make_unique<WindowMng>();
+    auto instanceMng = std::make_unique<InstanceMng>();
+
+    auto  instance = instanceMng.get()->_vkInstance;
+    auto& window   = windowMng.get()->getWindow();
+    
+    auto surfaceMng = std::make_unique<SurfaceMng>( instance , window );
+    auto surface    = surfaceMng.get()->getSurface();
+
+    auto deviceMng_WindowAPP = std::make_unique<DeviceMng_WindowAPP>( instance, surface );
 }

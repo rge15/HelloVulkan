@@ -9,13 +9,22 @@
 void
 ShaderModulesApp::run()
 {
-    UniqPtr<WindowMng> windowMng = std::make_unique<WindowMng>();
-    UniqPtr<InstanceMng> instanceMng = std::make_unique<InstanceMng>();
-    UniqPtr<SurfaceMng> surfaceMng = std::make_unique<SurfaceMng>( instanceMng.get()->_vkInstance, windowMng.get()->getWindow() );
-    UniqPtr<DeviceMng> deviceMng = std::make_unique<DeviceMng>( instanceMng.get()->_vkInstance, surfaceMng.get()->getSurface() );
-    UniqPtr<SwapchainMng> swapMng = std::make_unique<SwapchainMng>( 
-        deviceMng.get()->getDevice(), surfaceMng.get()->getSurface(), deviceMng.get()->getSwapchainDetails(), deviceMng.get()->getFamilyQueueIds() );
+    auto windowMng   = std::make_unique<WindowMng>();
+    auto instanceMng = std::make_unique<InstanceMng>();
+    
+    auto  instance   = instanceMng.get()->_vkInstance;
+    auto& window     = windowMng.get()->getWindow();
 
-    UniqPtr<ShaderSrc> vertShader = std::make_unique<ShaderSrc>(deviceMng.get()->getDevice(), "src/shaders/vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
-    UniqPtr<ShaderSrc> fragShader = std::make_unique<ShaderSrc>(deviceMng.get()->getDevice(), "src/shaders/frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
+    auto surfaceMng  = std::make_unique<SurfaceMng>( instance, window );
+    auto surface     = surfaceMng.get()->getSurface();
+
+    auto deviceMng   = std::make_unique<DeviceMng>( instance, surface);
+    auto device      = deviceMng.get()->getDevice();
+    auto swapDetails = deviceMng.get()->getSwapchainDetails();
+    auto queueIds    = deviceMng.get()->getFamilyQueueIds();
+
+    auto swapMng     = std::make_unique<SwapchainMng>( device, surface, swapDetails, queueIds );
+
+    auto vertShader = std::make_unique<ShaderSrc>(device, "src/shaders/vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
+    auto fragShader = std::make_unique<ShaderSrc>(device, "src/shaders/frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
 }

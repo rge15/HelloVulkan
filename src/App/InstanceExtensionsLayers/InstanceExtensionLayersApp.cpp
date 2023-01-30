@@ -5,6 +5,5 @@
 void
 InstanceExtensionLayersApp::run()
 {
-    std::cout << "HelloVulkan!\n";
-    UniqPtr<InstanceMng> instMng = std::make_unique<InstanceMng>();
+    auto instMng = std::make_unique<InstanceMng>();
 }

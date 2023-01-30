@@ -5,14 +5,15 @@
 void
 PhysicalDeviceApp::run()
 {
-    std::cout << "HelloVulkan!\n";
-    UniqPtr<InstanceMng> instMng = std::make_unique<InstanceMng>();
+    auto instMng = std::make_unique<InstanceMng>();
 
     uint32_t countDevices { 0 };
     Vector<VkPhysicalDevice> _devices {};
+    
     vkEnumeratePhysicalDevices( instMng.get()->_vkInstance, &countDevices, nullptr );
     _devices.resize(countDevices);
     vkEnumeratePhysicalDevices( instMng.get()->_vkInstance, &countDevices, &_devices[0]);
+    
     std::cout << "Num of physical devices : " << countDevices << '\n';
 
     VkPhysicalDevice phDevice {VK_NULL_HANDLE};
