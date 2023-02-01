@@ -6,3 +6,4 @@
 #include <App/SwapChain/SwapchainApp.hpp>
 #include <App/ShaderModules/ShaderModulesApp.hpp>
 #include <App/RenderPipelineConfiguration/RenderPipelineConfigApp.hpp>
+#include <App/PipelineLayout/PipelineLayoutApp.hpp>
