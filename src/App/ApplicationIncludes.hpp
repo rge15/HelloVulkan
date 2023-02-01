@@ -7,3 +7,4 @@
 #include <App/ShaderModules/ShaderModulesApp.hpp>
 #include <App/RenderPipelineConfiguration/RenderPipelineConfigApp.hpp>
 #include <App/PipelineLayout/PipelineLayoutApp.hpp>
+#include <App/RenderPass/RenderPassApp.hpp>

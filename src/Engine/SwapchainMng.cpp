@@ -16,7 +16,7 @@ SwapchainMng::SwapchainMng(VkDevice& p_device, VkSurfaceKHR& p_surface, const Sw
 
 SwapchainMng::~SwapchainMng()
 {
-    for(int i = 0 ; i < _viewImages.size(); i++)
+    for(auto i = 0 ; i < _viewImages.size(); i++)
     {
         vkDestroyImageView( _device, _viewImages[i], nullptr );
     }
@@ -193,3 +193,6 @@ SwapchainMng::getImageViews()
     
     std::cout << "VkImageViews created succesfully \n";
 }
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------

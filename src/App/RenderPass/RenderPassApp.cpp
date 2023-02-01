@@ -1,4 +1,4 @@
-#include "PipelineLayoutApp.hpp"
+#include "RenderPassApp.hpp"
 #include "Engine/InstanceMng.hpp"
 #include "Engine/DeviceMng.hpp"
 #include "Engine/WindowMng.hpp" 
@@ -7,9 +7,10 @@
 #include "Engine/Sources/ShaderSrc.hpp"
 #include "Engine/PipelineStructs/GraphicPipelineConfig.hpp"
 #include "Engine/PipelineStructs/PipelineLayout.hpp"
+#include "Engine/PipelineStructs/RenderPass.hpp"
 
 void
-PipelineLayoutApp::run()
+RenderPassApp::run()
 {
     auto windowMng   = std::make_unique<WindowMng>();
     auto instanceMng = std::make_unique<InstanceMng>();
@@ -33,4 +34,6 @@ PipelineLayoutApp::run()
 
     auto pipeConfig = GraphicPipelineConfig();
     auto pipeLayout = std::make_unique<PipelineLayout>( device );
+    auto renderPass = std::make_unique<RenderPass>( device, *swapMng.get() );
+
 }

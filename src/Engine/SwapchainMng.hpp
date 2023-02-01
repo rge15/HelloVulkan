@@ -1,3 +1,4 @@
+#pragma once
 #include "utilities/graphicInclude.hpp"
 #include "utilities/typeAliases.hpp"
 #include <Engine/utilStructs/SwapchainDetails.hpp>
@@ -23,6 +24,10 @@ public:
     SwapchainMng(VkDevice& p_device, VkSurfaceKHR& p_surface, const SwapchainDetails& p_details, const DeviceQueueFamilies& p_queueIds );
     ~SwapchainMng();
 
+    inline
+    const VkSwapchainCreateInfoKHR&
+    getSwapchainInfo() const { return _createInfo; };
+
 private:
     void
     initCreateInfo();
@@ -47,4 +52,5 @@ private:
 
     void
     getImageViews();
+
 };
