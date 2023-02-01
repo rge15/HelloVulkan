@@ -5,3 +5,4 @@
 #include <App/WindowSurfacePresent/WindowSurfacePresentApp.hpp>
 #include <App/SwapChain/SwapchainApp.hpp>
 #include <App/ShaderModules/ShaderModulesApp.hpp>
+#include <App/RenderPipelineConfiguration/RenderPipelineConfigApp.hpp>

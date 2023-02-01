@@ -2,7 +2,7 @@
 
 int main()
 {
-    ShaderModulesApp app{};
+    RenderPipelineConfigApp app{};
 
     app.run();
 }
