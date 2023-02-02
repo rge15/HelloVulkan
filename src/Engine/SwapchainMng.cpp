@@ -16,7 +16,7 @@ SwapchainMng::SwapchainMng(VkDevice& p_device, VkSurfaceKHR& p_surface, const Sw
 
 SwapchainMng::~SwapchainMng()
 {
-    for(auto i = 0 ; i < _viewImages.size(); i++)
+    for(size_t i = 0 ; i < _viewImages.size(); i++)
     {
         vkDestroyImageView( _device, _viewImages[i], nullptr );
     }
@@ -178,7 +178,7 @@ SwapchainMng::getImageViews()
     imageViewCreateInfo.subresourceRange.levelCount = 1;
     imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
 
-    for(int i = 0; i < _swapImages.size() ; i++ )
+    for(size_t i = 0; i < _swapImages.size() ; i++ )
     {
         imageViewCreateInfo.image = _swapImages[i];
 

@@ -9,3 +9,5 @@
 #include <App/PipelineLayout/PipelineLayoutApp.hpp>
 #include <App/RenderPass/RenderPassApp.hpp>
 #include <App/RenderPipeline/RenderPipelineApp.hpp>
+#include <App/FrameBuffers/FrameBuffersApp.hpp>
+

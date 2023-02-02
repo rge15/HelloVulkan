@@ -2,7 +2,7 @@
 
 int main()
 {
-    RenderPipelineApp app{};
+    FrameBuffersApp app{};
 
     app.run();
 }

@@ -28,6 +28,10 @@ public:
     const VkSwapchainCreateInfoKHR&
     getSwapchainInfo() const { return _createInfo; };
 
+    inline
+    const Vector<VkImageView>&
+    getSwapchainImageViews() const { return _viewImages; };
+
 private:
     void
     initCreateInfo();

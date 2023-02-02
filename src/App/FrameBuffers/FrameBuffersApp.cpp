@@ -1,4 +1,4 @@
-#include "RenderPipelineApp.hpp"
+#include "FrameBuffersApp.hpp"
 #include "Engine/InstanceMng.hpp"
 #include "Engine/DeviceMng.hpp"
 #include "Engine/WindowMng.hpp" 
@@ -9,9 +9,10 @@
 #include "Engine/PipelineStructs/PipelineLayout.hpp"
 #include "Engine/PipelineStructs/RenderPass.hpp"
 #include "Engine/RenderPipelineMng.hpp"
+#include "Engine/PipelineStructs/PipelineFrameBuffers.hpp"
 
 void
-RenderPipelineApp::run()
+FrameBuffersApp::run()
 {
     auto windowMng   = std::make_unique<WindowMng>();
     auto instanceMng = std::make_unique<InstanceMng>();
@@ -47,4 +48,7 @@ RenderPipelineApp::run()
     auto renderPassObj  = renderPass.get()->getRenderPass();
 
     auto renderPipelineMng = std::make_unique<RenderPipelineMng>( device, renderPassObj, layoutObj, pipeConfig, shaders );
+    
+    auto frameBuffers = std::make_unique<PipelineFrameBuffers>( device, renderPassObj, *swapMng.get());
+
 }
