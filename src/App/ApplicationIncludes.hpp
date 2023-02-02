@@ -8,3 +8,4 @@
 #include <App/RenderPipelineConfiguration/RenderPipelineConfigApp.hpp>
 #include <App/PipelineLayout/PipelineLayoutApp.hpp>
 #include <App/RenderPass/RenderPassApp.hpp>
+#include <App/RenderPipeline/RenderPipelineApp.hpp>

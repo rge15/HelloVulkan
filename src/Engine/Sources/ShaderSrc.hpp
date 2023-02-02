@@ -1,3 +1,4 @@
+#pragma once
 #include <utilities/graphicInclude.hpp>
 #include <utilities/typeAliases.hpp>
 
@@ -19,6 +20,10 @@ private:
 public:
     ShaderSrc(VkDevice& p_device, String&& p_filePath, VkShaderStageFlagBits p_shaderStage = VK_SHADER_STAGE_VERTEX_BIT ) noexcept;
     ~ShaderSrc();
+
+    inline
+    VkPipelineShaderStageCreateInfo
+    getShaderStageInfo() { return _shaderStageInfo; };
 
 private:
 

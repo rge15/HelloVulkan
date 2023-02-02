@@ -2,7 +2,7 @@
 
 int main()
 {
-    PipelineLayoutApp app{};
+    RenderPipelineApp app{};
 
     app.run();
 }

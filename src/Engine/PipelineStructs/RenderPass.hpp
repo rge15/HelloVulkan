@@ -1,3 +1,4 @@
+#pragma once
 #include <utilities/graphicInclude.hpp>
 #include <utilities/typeAliases.hpp>
 #include <Engine/SwapchainMng.hpp>
@@ -20,6 +21,10 @@ private:
 public:
     RenderPass( VkDevice& p_device, const SwapchainMng& p_swapMng );
     ~RenderPass();
+
+    inline
+    VkRenderPass&
+    getRenderPass(){ return _renderPass; };
 
 private:
 

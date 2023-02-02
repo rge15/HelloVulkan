@@ -1,3 +1,4 @@
+#pragma once
 #include <utilities/graphicInclude.hpp>
 #include <utilities/typeAliases.hpp>
 
@@ -15,6 +16,10 @@ public:
     PipelineLayout( VkDevice& p_device );
 
     ~PipelineLayout();
+
+    inline
+    VkPipelineLayout&
+    getLayout(){ return _pipeLayout; };
 
 private:
 
