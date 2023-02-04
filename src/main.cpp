@@ -2,7 +2,7 @@
 
 int main()
 {
-    FrameBuffersApp app{};
+    CommandBuffersApp app{};
 
     app.run();
 }

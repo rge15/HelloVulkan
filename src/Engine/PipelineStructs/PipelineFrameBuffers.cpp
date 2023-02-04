@@ -39,16 +39,16 @@ PipelineFrameBuffers::createBuffers() noexcept
     info.layers = swapInfo.imageArrayLayers;
 
     info.attachmentCount = 1;
-    
+
     int i = 0;
     for(auto& image : vkImages)
     {
         info.pAttachments = &image;
 
         auto result = vkCreateFramebuffer( _device, &info, nullptr, &_buffers[i]);
-
+        
         assert(result == VK_SUCCESS);
-
+        
         std::cout << "Framebuffer number : "<< i++ << "created succesfully \n";
     }
     
