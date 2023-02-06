@@ -2,7 +2,7 @@
 
 int main()
 {
-    CommandBuffersApp app{};
+    CmdExecutionApp app{};
 
     app.run();
 }

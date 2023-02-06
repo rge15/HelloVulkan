@@ -11,3 +11,4 @@
 #include <App/RenderPipeline/RenderPipelineApp.hpp>
 #include <App/FrameBuffers/FrameBuffersApp.hpp>
 #include <App/CommandBuffers/CommandBuffersApp.hpp>
+#include <App/CmdExecution/CmdExecutionApp.hpp>

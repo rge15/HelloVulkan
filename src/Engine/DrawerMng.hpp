@@ -1,3 +1,4 @@
+#pragma once
 #include <utilities/graphicInclude.hpp>
 #include <utilities/typeAliases.hpp>
 #include <Engine/utilStructs/DeviceQueueFamilies.hpp>
@@ -28,6 +29,10 @@ public:
 
     void
     recordDrawCommand( VkFramebuffer& p_framebuffer ) noexcept;
+
+    inline
+    VkCommandBuffer&
+    getCmdBuffer() { return _cmdBuffer; };
 
 private:
 

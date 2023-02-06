@@ -1,3 +1,4 @@
+#pragma once
 #include <utilities/graphicInclude.hpp>
 #include <utilities/typeAliases.hpp>
 #include <Engine/utilStructs/SwapchainDetails.hpp>
@@ -55,6 +56,21 @@ public:
 	{
 		return _logicalDevice;
 	}
+
+	inline
+	VkQueue&
+	getGraphicQueueHandler() noexcept
+	{
+		return _graphicQueueHandler;
+	}
+
+	inline
+	VkQueue&
+	getPresentQueueHandler() noexcept
+	{
+		return _presentQueueHandler;
+	}
+
 
 private:
 
