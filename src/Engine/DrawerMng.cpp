@@ -8,7 +8,7 @@ DrawerMng::DrawerMng(
 , _pipeline { p_pipeline }, _swapInfo { p_swapInfo }
 {
     createCommandPool();
-    createCommandBuffer();
+    allocateCommandBuffer();
     initCommandBufferRecordingInfo();
 }
 
@@ -44,7 +44,7 @@ DrawerMng::createCommandPool() noexcept
 //-----------------------------------------------------------------------------
 
 void
-DrawerMng::createCommandBuffer() noexcept
+DrawerMng::allocateCommandBuffer() noexcept
 {
     VkCommandBufferAllocateInfo _info {};
     

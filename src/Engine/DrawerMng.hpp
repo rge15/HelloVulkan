@@ -35,7 +35,7 @@ private:
     createCommandPool() noexcept;
 
     void
-    createCommandBuffer() noexcept;
+    allocateCommandBuffer() noexcept;
 
     void
     initCommandBufferRecordingInfo() noexcept;
