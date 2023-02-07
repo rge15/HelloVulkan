@@ -11,8 +11,8 @@ Renderer::Renderer(DeviceMng& p_deviceMng, SwapchainMng& p_swapMng, DrawerMng& p
 
 Renderer::~Renderer()
 {
-    vkDestroySemaphore( _device, _imageAvailable, nullptr );
-    vkDestroySemaphore( _device, _imageRendered, nullptr );
+    vkDestroySemaphore( _device, _imgAvailable, nullptr );
+    vkDestroySemaphore( _device, _imgRendered, nullptr );
     vkDestroyFence( _device, _cmdBufferAvailable, nullptr );
 }
 
@@ -31,7 +31,6 @@ Renderer::drawFrame()
     _drawer.recordDrawCommand( frameBuffer );
 
     submitCommands( imageId );
-
 }
 
 //-----------------------------------------------------------------------------
@@ -43,10 +42,10 @@ Renderer::createSyncObjects()
     VkSemaphoreCreateInfo semaInfo {};
     semaInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
     semaInfo.pNext = nullptr;
-    semaInfo.flags = 0;
-
-    vkCreateSemaphore( _device, &semaInfo, nullptr, &_imageAvailable );
-    vkCreateSemaphore( _device, &semaInfo, nullptr, &_imageRendered );
+    semaInfo.flags = 0; 
+    
+    vkCreateSemaphore( _device, &semaInfo, nullptr, &_imgAvailable );
+    vkCreateSemaphore( _device, &semaInfo, nullptr, &_imgRendered );
 
     VkFenceCreateInfo fenceInfo {};
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
@@ -64,11 +63,11 @@ Renderer::createSyncObjects()
 uint32_t
 Renderer::getFrameBufferIndex()
 {
-    uint32_t imageId { 0 };
+    uint32_t imgId  = 0;
+    auto swapchain  = _swapMng.getSwapchain();
 
-    vkAcquireNextImageKHR( _device, _swapMng.getSwapchain(), UINT64_MAX, _imageAvailable, VK_NULL_HANDLE, &imageId);
-
-    return imageId;
+    vkAcquireNextImageKHR( _device, swapchain, UINT64_MAX, _imgAvailable, VK_NULL_HANDLE, &imgId);
+    return imgId;
 }
 
 //-----------------------------------------------------------------------------
@@ -79,29 +78,31 @@ Renderer::submitCommands( uint32_t p_imageId ) noexcept
 {
     VkPipelineStageFlags stageFlags { VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT };
     VkSubmitInfo _subInfo {};
+    
     _subInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     _subInfo.pNext = nullptr;
-    _subInfo.commandBufferCount = 1;
-    _subInfo.pCommandBuffers = &_drawer.getCmdBuffer();
     _subInfo.waitSemaphoreCount = 1;
-    _subInfo.pWaitSemaphores = &_imageAvailable;    
-    _subInfo.pWaitDstStageMask = &stageFlags;
-    _subInfo.signalSemaphoreCount = 1;
-    _subInfo.pSignalSemaphores = &_imageRendered;
+    _subInfo.pWaitSemaphores    = &_imgAvailable;    
+    _subInfo.pWaitDstStageMask  = &stageFlags;
+    _subInfo.commandBufferCount = 1;
+    
+    _subInfo.pCommandBuffers        = &_drawer.getCmdBuffer();
+    _subInfo.signalSemaphoreCount   = 1;
+    _subInfo.pSignalSemaphores      = &_imgRendered;
 
-    vkQueueSubmit( _deviceMng.getGraphicQueueHandler(), 1, &_subInfo, _cmdBufferAvailable );
+    auto graphicQueueHandler = _deviceMng.getGraphicQueueHandler();
+    vkQueueSubmit( graphicQueueHandler, 1, &_subInfo, _cmdBufferAvailable );
 
     VkPresentInfoKHR presentInfo {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     presentInfo.pNext = nullptr;
 
-    presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores = &_imageRendered;
-    
-    presentInfo.swapchainCount = 1;
-    presentInfo.pSwapchains = &_swapMng.getSwapchain();
-    presentInfo.pImageIndices = &p_imageId;
+    presentInfo.waitSemaphoreCount  = 1;
+    presentInfo.pWaitSemaphores     = &_imgRendered;
 
+    presentInfo.swapchainCount  = 1;
+    presentInfo.pSwapchains     = &_swapMng.getSwapchain();
+    presentInfo.pImageIndices   = &p_imageId;
     presentInfo.pResults = nullptr;
 
     vkQueuePresentKHR( _deviceMng.getPresentQueueHandler(), &presentInfo );

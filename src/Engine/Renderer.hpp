@@ -16,8 +16,8 @@ private:
     PipelineFrameBuffers&   _frameBuffers;
 
     VkFence     _cmdBufferAvailable { VK_NULL_HANDLE };
-    VkSemaphore _imageAvailable     { VK_NULL_HANDLE };
-    VkSemaphore _imageRendered      { VK_NULL_HANDLE };
+    VkSemaphore _imgAvailable       { VK_NULL_HANDLE };
+    VkSemaphore _imgRendered        { VK_NULL_HANDLE };
 
 
 public:

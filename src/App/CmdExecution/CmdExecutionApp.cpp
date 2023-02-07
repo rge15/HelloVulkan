@@ -31,8 +31,9 @@ CmdExecutionApp::run()
     auto swapDetails = deviceMng.get()->getSwapchainDetails();
     auto queueIds    = deviceMng.get()->getFamilyQueueIds();
 
-    auto swapMng    = std::make_unique<SwapchainMng>( device, surface, swapDetails, queueIds );
-    auto swapInfo   = swapMng.get()->getSwapchainInfo(); 
+    auto swapMng        = std::make_unique<SwapchainMng>( device, surface, swapDetails, queueIds );
+    auto& swapMngObj    = *swapMng.get();
+    auto swapInfo       = swapMngObj.getSwapchainInfo(); 
 
     auto vertShaderSrc = std::make_unique<ShaderSrc>(device, "src/shaders/vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
     auto fragShaderSrc = std::make_unique<ShaderSrc>(device, "src/shaders/frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -47,23 +48,27 @@ CmdExecutionApp::run()
     auto pipeLayout = std::make_unique<PipelineLayout>( device );
     auto layoutObj  = pipeLayout.get()->getLayout();
 
-    auto renderPass     = std::make_unique<RenderPass>( device, *swapMng.get() );
+    auto renderPass     = std::make_unique<RenderPass>( device, swapMngObj );
     auto renderPassObj  = renderPass.get()->getRenderPass();
 
     auto  renderPipelineMng  = std::make_unique<RenderPipelineMng>( device, renderPassObj, layoutObj, pipeConfig, shaders );
     auto& pipeline           = renderPipelineMng.get()->_pipeline;
 
-    auto frameBuffers = std::make_unique<PipelineFrameBuffers>( device, renderPassObj, *swapMng.get());
+    auto frameBuffers = std::make_unique<PipelineFrameBuffers>( device, renderPassObj, swapMngObj);
 
     auto drawerMng = std::make_unique<DrawerMng>( device, queueIds, renderPassObj, pipeline, swapInfo );
 
-    auto renderer = std::make_unique<Renderer>( *deviceMng.get(), *swapMng.get(), *drawerMng.get(), *frameBuffers.get() );
+    auto& deviceMngObj      = *deviceMng.get();
+    auto& draweMngObj       = *drawerMng.get();
+    auto& framebufferMngObj = *frameBuffers.get();
 
+    auto renderer       = std::make_unique<Renderer>( deviceMngObj, swapMngObj, draweMngObj, framebufferMngObj);
+    auto& rendererObj    = *renderer.get();
 
-    while( !glfwWindowShouldClose(&window) )
+    while( glfwGetKey(&window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && !glfwWindowShouldClose(&window) )
     {
         glfwPollEvents();
-        renderer.get()->drawFrame();
+        rendererObj.drawFrame();
     }
 
     vkDeviceWaitIdle(device);
